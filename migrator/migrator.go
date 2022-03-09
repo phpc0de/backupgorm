@@ -160,7 +160,7 @@ func (m Migrator) CreateTable(values ...interface{}) error {
 		tx := m.DB.Session(&gorm.Session{})
 		if err := m.RunWithValue(value, func(stmt *gorm.Statement) (errr error) {
 			var (
-				createTableSQL          = "CREATE TABLE ? ("
+				createTableSQL          = "CREATE TABLE ? (\n"
 				values                  = []interface{}{m.CurrentTable(stmt)}
 				hasPrimaryKeyInDataType bool
 			)
@@ -171,7 +171,7 @@ func (m Migrator) CreateTable(values ...interface{}) error {
 					createTableSQL += "? ?"
 					hasPrimaryKeyInDataType = hasPrimaryKeyInDataType || strings.Contains(strings.ToUpper(string(field.DataType)), "PRIMARY KEY")
 					values = append(values, clause.Column{Name: dbName}, m.DB.Migrator().FullDataTypeOf(field))
-					createTableSQL += ","
+					createTableSQL += ",\n"
 				}
 			}
 
@@ -230,7 +230,7 @@ func (m Migrator) CreateTable(values ...interface{}) error {
 
 			createTableSQL = strings.TrimSuffix(createTableSQL, ",")
 
-			createTableSQL += ")"
+			createTableSQL += "\n)"
 
 			if tableOption, ok := m.DB.Get("gorm:table_options"); ok {
 				createTableSQL += fmt.Sprint(tableOption)
